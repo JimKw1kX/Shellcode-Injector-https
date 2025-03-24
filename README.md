@@ -1,7 +1,7 @@
 # Shellcode-Injector-https
 Downloading shellcode to bypass ASR
 
-# Note:warning:: This project is licensed under the terms of the MIT license.
+⚠️ Note: This project is licensed under the terms of the MIT license.
 
 
 # Info:
