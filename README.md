@@ -1,8 +1,8 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Follow @JimKwik_X](https://img.shields.io/twitter/follow/JimKwik_X?style=social)](https://x.com/JimKwik_X)
+
 # Shellcode-Injector-https
 Downloading shellcode to bypass ASR
-
-⚠️ Note: This project is licensed under the terms of the MIT license.
-
 
 # Info:
 This is an updated version of the previous [Injector](https://github.com/JimSolomon/Shellcode-Injector) which hardcoded the shellcode into the injector, this updated version downloads shellcode over https. 
